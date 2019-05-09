@@ -1,6 +1,15 @@
 // Written by Serena Li
 class Board {
-  Tile[][] board = new Tile[4][4];
+  private Tile[][] board;
+  private color borderColor;
+  private color emptyColor;
+  
+  public Board() {
+    board = new Tile[4][4];
+    reset();
+    borderColor = color(188, 173, 162);
+    emptyColor = color(206, 193, 181);
+  }
   
   /** Sets the board back to its starting state 
    * (Two "2" tiles in random places) */
@@ -20,7 +29,12 @@ class Board {
     board[rand2 / 4][rand2 % 4] = new Tile(2);
   }
   
-  void swipeRight() {
+  public void draw() {
+    int boardWidth = Math.min(width, height);
+  }
+  
+  
+  public void swipeRight() {
     // implement the swipe and merge right
     for (int row = 0; row < 4; row++) {
       int notFilled = 3;
@@ -47,7 +61,7 @@ class Board {
     }
     addTile(2);
   }
-  void swipeLeft() {
+  public void swipeLeft() {
     for (int row = 0; row < 4; row++) {
       int notFilled = 0;
       for (int col = 0; col < 4; col++) {
@@ -73,7 +87,7 @@ class Board {
     }
     addTile(2);
   }
-  void swipeUp() {
+  public void swipeUp() {
     for (int col = 0; col < 4; col++) {
       int notFilled = 0;
       for (int row = 0; row < 4; row++) {
@@ -86,7 +100,7 @@ class Board {
       int rowToCombine = 1;
       while (rowToCombine <= 3) {
         if (board[rowToCombine][col].equals(board[rowToCombine-1][col])) {
-          board[rowToCombine-1][col] = new Tile(board[rowToCombine][col].getValue()*2));
+          board[rowToCombine-1][col] = new Tile(board[rowToCombine][col].getValue()*2);
           board[rowToCombine][col] = null;
           for (int i = rowToCombine; i < 3; i++) {
             board[i][col] = board[i+1][col];
@@ -99,7 +113,7 @@ class Board {
     }
     addTile(2);
   }
-  void swipeDown() {
+  public void swipeDown() {
     for (int col = 0; col < 4; col++) {
       int notFilled = 3;
       for (int row = 3; row >= 0; row--) {
@@ -111,7 +125,7 @@ class Board {
       }
       int rowToCombine = 2; 
       while (rowToCombine >= 0) {
-        if (board[rowToCombine][col].equals(board[rowToCombine+1][col]) {
+        if (board[rowToCombine][col].equals(board[rowToCombine+1][col])) {
           board[rowToCombine+1][col] = new Tile(board[rowToCombine][col].getValue()*2);
           board[rowToCombine][col] = null;
           for (int i = rowToCombine; i >= 1; i--) {
