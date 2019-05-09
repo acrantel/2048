@@ -31,6 +31,7 @@ class Board {
   
   public void draw() {
     int boardWidth = Math.min(width, height);
+    rect(0, 0, boardWidth, boardWidth, boardWidth/20);
   }
   
   
