@@ -21,6 +21,7 @@ class Board {
   }
   
   void swipeRight() {
+    // implement the swipe and merge right
     for (int row = 0; row < 4; row++) {
       int notFilled = 3;
       for (int col = 3; col >= 0; col--) {
@@ -44,6 +45,7 @@ class Board {
         colToCombine--;
       }
     }
+    addTile(2);
   }
   void swipeLeft() {
     for (int row = 0; row < 4; row++) {
@@ -69,6 +71,7 @@ class Board {
         colToCombine++;
       }
     }
+    addTile(2);
   }
   void swipeUp() {
     for (int col = 0; col < 4; col++) {
@@ -94,6 +97,7 @@ class Board {
         rowToCombine++;
       }
     }
+    addTile(2);
   }
   void swipeDown() {
     for (int col = 0; col < 4; col++) {
@@ -119,5 +123,19 @@ class Board {
         rowToCombine--;
       }
     }
+    addTile(2);
+  }
+  /** Precondition: There must be at least one space open on the board */
+  private void addTile(int value) {
+    int[] open = new int[16];
+    int openCount = 0;
+    for (int i = 0; i < 16; i++) {
+      if (board[i/4][i%4] == null) {
+        open[openCount] = i;
+        openCount++;
+      }
+    }
+    int tile = int(random(openCount));
+    board[tile/4][tile%4] = new Tile(value);
   }
 }
