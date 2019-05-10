@@ -4,6 +4,8 @@ class Board {
   private color borderColor;
   private color emptyColor;
   
+  /** Initializes a new 4x4 Board with two tiles
+   * in random places, and default colors */
   public Board() {
     board = new Tile[4][4];
     reset();
@@ -31,7 +33,29 @@ class Board {
   
   public void draw() {
     int boardWidth = Math.min(width, height);
-    rect(0, 0, boardWidth, boardWidth, boardWidth/20);
+    int unitsPerTile = 7;
+    int tileWidth = boardWidth*(unitsPerTile-1)/(unitsPerTile*4+1);
+    fill(borderColor);
+    stroke(borderColor);
+    rect(0, 0, boardWidth, boardWidth, boardWidth/50);
+    for (int row = 0; row < 4; row++) {
+      for (int col = 0; col < 4; col++) {
+        fill(board[row][col] == null ? emptyColor : board[row][col].getColor());
+        stroke(board[row][col] == null ? emptyColor : board[row][col].getColor());
+        rect(boardWidth*(col*(unitsPerTile)+1)/(unitsPerTile*4+1), boardWidth*(row*(unitsPerTile)+1)/(unitsPerTile*4+1), tileWidth, tileWidth, tileWidth/20);
+        if (board[row][col] != null) { // draw the number
+          textFont(f, boardWidth/6);
+          textAlign(CENTER);
+          fill(board[row][col].getFontColor());
+          float x = boardWidth*(col*unitsPerTile+unitsPerTile/2.0)/(unitsPerTile*4+1);
+          float y = boardWidth*(row*unitsPerTile+unitsPerTile/2.0)/(unitsPerTile*4+1);
+          fill(color(12, 12, 12));
+          rect(x, y, 4, 4);
+          text(""+board[row][col].getValue(), x, y);
+        }
+      }
+    }
+      
   }
   
   
