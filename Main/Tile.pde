@@ -3,7 +3,7 @@ class Tile {
   }
   public int getValue() {
     //TODO
-    return 0;
+    return 2;
   }
   public color getColor() {
     //TODO
@@ -16,6 +16,6 @@ class Tile {
 
   public boolean equals(Tile o) {
     //TODO
-    return false;
+    return true;
   }
 }

@@ -75,8 +75,9 @@ class Board {
       int notFilled = 3;
       for (int col = 3; col >= 0; col--) {
         if (board[row][col] != null) {
-          board[row][notFilled] = board[row][col];
+          Tile temp = board[row][col];
           board[row][col] = null;
+          board[row][notFilled] = temp;
           notFilled--;
         }
       }
@@ -101,9 +102,10 @@ class Board {
       int notFilled = 0;
       for (int col = 0; col < 4; col++) {
         if (board[row][col] != null) {
-          board[row][notFilled] = board[row][col];
+          Tile temp = board[row][col];
           board[row][col] = null;
-          notFilled--;
+          board[row][notFilled] = temp;
+          notFilled++;
         }
       }
       int colToCombine = 1;
@@ -127,8 +129,9 @@ class Board {
       int notFilled = 0;
       for (int row = 0; row < 4; row++) {
         if (board[row][col] != null) {
-          board[notFilled][col] = board[row][col];
+          Tile temp = board[row][col];
           board[row][col] = null;
+          board[notFilled][col] = temp;
           notFilled++;
         }
       }
@@ -153,8 +156,9 @@ class Board {
       int notFilled = 3;
       for (int row = 3; row >= 0; row--) {
         if (board[row][col] != null) {
-          board[notFilled][col] = board[row][col];
+          Tile temp = board[row][col];
           board[row][col] = null;
+          board[notFilled][col] = temp;
           notFilled--;
         }
       }
