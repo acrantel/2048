@@ -55,6 +55,7 @@ class Board {
           fill(color(12, 12, 12));
           rect(x, y, 4, 4);
           rectMode(CENTER);
+          //TODO DRAW THE NUMBER BETTER
           text(""+board[row][col].getValue(), x, y, 100, 100);
         }
       }
@@ -81,7 +82,7 @@ class Board {
       }
       int colToCombine = 2;
       while (colToCombine >= 0) {
-        if (board[row][colToCombine].equals(board[row][colToCombine+1])) {
+        if (board[row][colToCombine] != null && board[row][colToCombine].equals(board[row][colToCombine+1])) {
           board[row][colToCombine+1] = new Tile(board[row][colToCombine].getValue()*2);
           board[row][colToCombine] = null;
           for (int i = colToCombine; i >= 1; i--) {
@@ -107,7 +108,7 @@ class Board {
       }
       int colToCombine = 1;
       while (colToCombine <= 3) {
-        if (board[row][colToCombine].equals(board[row][colToCombine-1])) {
+        if (board[row][colToCombine] != null && board[row][colToCombine].equals(board[row][colToCombine-1])) {
           board[row][colToCombine-1] = new Tile(board[row][colToCombine].getValue()*2);
           board[row][colToCombine] = null;
           for (int i = colToCombine; i < 3; i++) {
@@ -133,7 +134,7 @@ class Board {
       }
       int rowToCombine = 1;
       while (rowToCombine <= 3) {
-        if (board[rowToCombine][col].equals(board[rowToCombine-1][col])) {
+        if (board[rowToCombine][col] != null && board[rowToCombine][col].equals(board[rowToCombine-1][col])) {
           board[rowToCombine-1][col] = new Tile(board[rowToCombine][col].getValue()*2);
           board[rowToCombine][col] = null;
           for (int i = rowToCombine; i < 3; i++) {
@@ -159,7 +160,7 @@ class Board {
       }
       int rowToCombine = 2; 
       while (rowToCombine >= 0) {
-        if (board[rowToCombine][col].equals(board[rowToCombine+1][col])) {
+        if (board[rowToCombine][col] != null && board[rowToCombine][col].equals(board[rowToCombine+1][col])) {
           board[rowToCombine+1][col] = new Tile(board[rowToCombine][col].getValue()*2);
           board[rowToCombine][col] = null;
           for (int i = rowToCombine; i >= 1; i--) {
