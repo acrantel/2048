@@ -1,1 +1,10 @@
-//TODO write a "ai" to play 2048 optimally
+class PlayerAI {
+  public PlayerAI() {
+  }
+  public void step() {
+  }
+  
+  private int merges(Move move) {
+    
+  }
+}

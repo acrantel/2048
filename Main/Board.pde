@@ -56,15 +56,10 @@ class Board {
           rect(x, y, 4, 4);
           rectMode(CENTER);
           //TODO DRAW THE NUMBER BETTER
-          text(""+board[row][col].getValue(), x, y, 100, 100);
+          text(""+board[row][col].getValue(), x, y, 200, 2);
         }
       }
     }
-    rectMode(CENTER);
-    fill(0, 0, 0);
-    textSize(65);
-    text("0", 100, 100, 100, 100);
-    rect(100, 100, 2, 2);
       
   }
   
@@ -95,7 +90,7 @@ class Board {
         colToCombine--;
       }
     }
-    addTile(2);
+    addTiles();
   }
   public void swipeLeft() {
     for (int row = 0; row < 4; row++) {
@@ -122,7 +117,7 @@ class Board {
         colToCombine++;
       }
     }
-    addTile(2);
+    addTiles();
   }
   public void swipeUp() {
     for (int col = 0; col < 4; col++) {
@@ -149,7 +144,7 @@ class Board {
         rowToCombine++;
       }
     }
-    addTile(2);
+    addTiles();
   }
   public void swipeDown() {
     for (int col = 0; col < 4; col++) {
@@ -176,10 +171,11 @@ class Board {
         rowToCombine--;
       }
     }
-    addTile(2);
+    addTiles();
   }
   /** Precondition: There must be at least one space open on the board */
-  private void addTile(int value) {
+  private void addTiles() {
+    int valToAdd = random(1) > .1 ? 2 : 4;
     int[] open = new int[16];
     int openCount = 0;
     for (int i = 0; i < 16; i++) {
@@ -189,6 +185,6 @@ class Board {
       }
     }
     int tile = int(random(openCount));
-    board[tile/4][tile%4] = new Tile(value);
+    board[tile/4][tile%4] = new Tile(valToAdd);
   }
 }
