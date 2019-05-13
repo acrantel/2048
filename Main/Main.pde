@@ -1,7 +1,7 @@
 Board board;
 PFont f;
 void setup() {
-  f = loadFont("Corbel-100.vlw");
+  f = loadFont("ProcessingSansPro-Semibold-48");
   board = new Board();
   size(750 , 750);
 }
