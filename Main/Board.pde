@@ -52,8 +52,7 @@ class Board {
           fill(board[row][col].getFontColor());
           float x = boardWidth*(col*unitsPerTile+1+(unitsPerTile-1)/2.0)/(unitsPerTile*4+1);
           float y = boardWidth*(row*unitsPerTile+1+(unitsPerTile-1)/2.0)/(unitsPerTile*4+1);
-          fill(color(12, 12, 12));
-          rect(x, y, 4, 4);
+          fill(board[row][col].getFontColor());
           rectMode(CENTER);
           //TODO DRAW THE NUMBER BETTER
           text(""+board[row][col].getValue(), x, y, 200, 200);
