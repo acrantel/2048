@@ -56,7 +56,7 @@ class Board {
           rect(x, y, 4, 4);
           rectMode(CENTER);
           //TODO DRAW THE NUMBER BETTER
-          text(""+board[row][col].getValue(), x, y, 200, 2);
+          text(""+board[row][col].getValue(), x, y, 200, 200);
         }
       }
     }
@@ -185,6 +185,7 @@ class Board {
       }
     }
     int tile = int(random(openCount));
-    board[tile/4][tile%4] = new Tile(valToAdd);
+    System.out.println(open[tile]);
+    board[open[tile]/4][open[tile]%4] = new Tile(valToAdd);
   }
 }

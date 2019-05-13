@@ -1,6 +1,5 @@
 
 void keyPressed() {
-  if (!runAI) {
     if (key == 'w' || key == 'W' || (key == CODED && keyCode == UP)) {
       board.swipeUp();
       System.out.println("up");
@@ -14,5 +13,5 @@ void keyPressed() {
       board.swipeRight();
       System.out.println("right");
     }
-  }
+  
 }
