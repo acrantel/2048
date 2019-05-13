@@ -63,8 +63,8 @@ class Board {
       
   }
   
-  
   public void swipeRight() {
+    boolean edited = false;
     // implement the swipe and merge right
     for (int row = 0; row < 4; row++) {
       int notFilled = 3;
@@ -73,6 +73,9 @@ class Board {
           Tile temp = board[row][col];
           board[row][col] = null;
           board[row][notFilled] = temp;
+          if (col != notFilled) {
+            edited = true;
+          }
           notFilled--;
         }
       }
@@ -86,13 +89,17 @@ class Board {
             board[row][i-1] = null;
           }
           colToCombine--; // cannot do a "double" combine
+          edited = true;
         }
         colToCombine--;
       }
     }
-    addTiles();
+    if (edited) {
+      addTiles();
+    }
   }
   public void swipeLeft() {
+    boolean edited = false;
     for (int row = 0; row < 4; row++) {
       int notFilled = 0;
       for (int col = 0; col < 4; col++) {
@@ -100,6 +107,9 @@ class Board {
           Tile temp = board[row][col];
           board[row][col] = null;
           board[row][notFilled] = temp;
+          if (notFilled != col) {
+            edited = true;
+          }
           notFilled++;
         }
       }
@@ -112,14 +122,18 @@ class Board {
             board[row][i] = board[row][i+1];
             board[row][i+1] = null;
           }
+          edited = true;
           colToCombine++;
         }
         colToCombine++;
       }
     }
-    addTiles();
+    if (edited) {
+      addTiles();
+    }
   }
   public void swipeUp() {
+    boolean edited = false;
     for (int col = 0; col < 4; col++) {
       int notFilled = 0;
       for (int row = 0; row < 4; row++) {
@@ -127,6 +141,9 @@ class Board {
           Tile temp = board[row][col];
           board[row][col] = null;
           board[notFilled][col] = temp;
+          if (row != notFilled) {
+            edited = true;
+          }
           notFilled++;
         }
       }
@@ -139,14 +156,18 @@ class Board {
             board[i][col] = board[i+1][col];
             board[i+1][col] = null;
           }
+          edited = true;
           rowToCombine++;
         }
         rowToCombine++;
       }
     }
-    addTiles();
+    if (edited) {
+      addTiles();
+    }
   }
   public void swipeDown() {
+    boolean edited = false;
     for (int col = 0; col < 4; col++) {
       int notFilled = 3;
       for (int row = 3; row >= 0; row--) {
@@ -154,6 +175,9 @@ class Board {
           Tile temp = board[row][col];
           board[row][col] = null;
           board[notFilled][col] = temp;
+          if (notFilled != row) {
+            edited = true;
+          }
           notFilled--;
         }
       }
@@ -166,12 +190,15 @@ class Board {
             board[i][col] = board[i-1][col];
             board[i-1][col] = null;
           }
+          edited = true;
           rowToCombine--;
         }
         rowToCombine--;
       }
     }
-    addTiles();
+    if (edited) {
+      addTiles();
+    }
   }
   /** Precondition: There must be at least one space open on the board */
   private void addTiles() {
@@ -184,8 +211,9 @@ class Board {
         openCount++;
       }
     }
-    int tile = int(random(openCount));
-    System.out.println(open[tile]);
-    board[open[tile]/4][open[tile]%4] = new Tile(valToAdd);
+    if (openCount != 0) {
+      int tile = int(random(openCount));
+      board[open[tile]/4][open[tile]%4] = new Tile(valToAdd);
+    }
   }
 }
