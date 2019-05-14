@@ -87,7 +87,6 @@ class Board {
             board[row][i] = board[row][i-1];
             board[row][i-1] = null;
           }
-          colToCombine--; // cannot do a "double" combine
           edited = true;
         }
         colToCombine--;
@@ -122,7 +121,6 @@ class Board {
             board[row][i+1] = null;
           }
           edited = true;
-          colToCombine++;
         }
         colToCombine++;
       }
@@ -156,7 +154,6 @@ class Board {
             board[i+1][col] = null;
           }
           edited = true;
-          rowToCombine++;
         }
         rowToCombine++;
       }
@@ -192,7 +189,6 @@ class Board {
           edited = true;
           rowToCombine--;
         }
-        rowToCombine--;
       }
     }
     if (edited) {
