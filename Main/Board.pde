@@ -42,6 +42,7 @@ class Board {
     textSize(boardWidth/6);
     int unitsPerTile = 7;
     int tileWidth = boardWidth*(unitsPerTile-1)/(unitsPerTile*4+1);
+    textSize(tileWidth*0.679);
     fill(borderColor);
     stroke(borderColor);
     rectMode(CORNER);
@@ -59,6 +60,7 @@ class Board {
           fill(board[row][col].getFontColor());
           rectMode(CENTER);
           //TODO DRAW THE NUMBER BETTER
+          
           text(""+board[row][col].getValue(), x, y, 200, 200);
         }
       }
