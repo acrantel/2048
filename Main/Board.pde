@@ -13,6 +13,10 @@ class Board {
     emptyColor = color(206, 193, 181);
   }
   
+  public Tile at(int r, int c) {
+    return board[r][c];
+  }
+  
   /** Sets the board back to its starting state 
    * (Two "2" tiles in random places) */
   public void reset() {

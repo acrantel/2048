@@ -1,18 +1,14 @@
-Board board;
+Board mainBoard;
 PFont f;
+AI ai;
 void setup() {
   f = loadFont("ProcessingSansPro-Semibold-100.vlw");
-  board = new Board();
+  mainBoard = new Board();
   size(750 , 750);
-  //PlayerAI ai = new PlayerAI();
-  //long b = ai.replace(0, 1, 1, 4);
-  //b = ai.replace(b, 2, 2, 3);
-  //b = ai.replace(b, 2, 3, 3);
-  //System.out.println(b);
-  //System.out.println("Swiped left: " + ai.swipeLeft(b));
-  //System.out.println("Swiped right: " + ai.swipeRight(b));
+  ai = new AI(); //<>//
   
 }
 void draw() {
-  board.draw();
+  ai.move(mainBoard);
+  mainBoard.draw();
 }
