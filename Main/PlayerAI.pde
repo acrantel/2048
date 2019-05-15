@@ -11,7 +11,8 @@ class PlayerAI {
       return heuristic(brd);
     } else if (depth % 2 == 0) { // our move
       // check all possible moves (wasd) and choose the one that maximizes the heuristic value
-      for (int i = 0; i < 
+      for (int i = 0; i < 4; i++) {
+      }
     }
     return 0;
   }
@@ -22,151 +23,112 @@ class PlayerAI {
   public void step() {
   }
   
-  private int merges(Move move, long brd) {
+  public int merges(Move move, long brd) {
     return 0;
   }
-  private long swipe(int dir, long brd) {
+  
+  public long swipe(int dir, long brd) {
     for (int row = 0; row < 4; row++) {
       int notFilled = 3;
       for (int col = 3; col > 0; col--) {
-      }}
+        
+      }
+    }
+    return 0;
   }
+  /** Replaces the 4 bit section at row/col with the least 4 bits of toReplace.
+   * Rows and columns start counting from 0. */
   private long replace(long brd, int row, int col, int toReplace) {
-    return 
+    return (brd & (~(15 << ((row*4+col)*4))) ) | ((toReplace & 15) << ((row*4+col)*4));
   }
   
-  
-  public void swipeRight() {
-    boolean edited = false;
-    // implement the swipe and merge right
-    for (int row = 0; row < 4; row++) {
+  private int valueAt(long brd, int row, int col) {
+    return (int)(brd >>> ((row*4+col)*4)) & 15;
+  }
+  public long swipeRight(long brd) {
+    for (int r = 0; r < 4; r++) {
       int notFilled = 3;
-      for (int col = 3; col >= 0; col--) {
-        if (board[row][col] != null) {
-          Tile temp = board[row][col];
-          board[row][col] = null;
-          board[row][notFilled] = temp;
-          if (col != notFilled) {
-            edited = true;
-          }
+      for (int c = 3; c >= 0; c--) {
+        int tileVal = valueAt(brd, r, c);
+        if (tileVal != 0) {
+          replace(brd, r, c, 0);
+          replace(brd, r, notFilled, tileVal);
           notFilled--;
         }
       }
       int colToCombine = 2;
       while (colToCombine >= 0) {
-        if (board[row][colToCombine] != null && board[row][colToCombine].equals(board[row][colToCombine+1])) {
-          board[row][colToCombine+1] = new Tile(board[row][colToCombine].getValue()*2);
-          board[row][colToCombine] = null;
+        if (valueAt(brd, r, colToCombine) != 0 && valueAt(brd, r, colToCombine) == valueAt(brd, r, colToCombine+1)) {
+          replace(brd, r, colToCombine+1, valueAt(brd, r, colToCombine)*2);
+          replace(brd, r, colToCombine, 0);
           for (int i = colToCombine; i >= 1; i--) {
-            board[row][i] = board[row][i-1];
-            board[row][i-1] = null;
+            replace(brd, r, i, valueAt(brd, r, i-1));
+            replace(brd, r, i-1, 0);
           }
-          edited = true;
         }
         colToCombine--;
       }
     }
-    if (edited) {
-      addTiles();
-    }
+    return brd;
   }
-  public void swipeLeft() {
-    boolean edited = false;
+  public long swipeLeft(long brd) {
     for (int row = 0; row < 4; row++) {
-      int notFilled = 0;
+      int notFilled = 0; 
       for (int col = 0; col < 4; col++) {
-        if (board[row][col] != null) {
-          Tile temp = board[row][col];
-          board[row][col] = null;
-          board[row][notFilled] = temp;
-          if (notFilled != col) {
-            edited = true;
-          }
+        if (valueAt(brd, row, col) == 0) {
+          int temp = valueAt(brd, row, col);
+          replace(brd, row, col, 0);
+          replace(brd, row, notFilled, temp);
           notFilled++;
         }
       }
       int colToCombine = 1;
       while (colToCombine <= 3) {
-        if (board[row][colToCombine] != null && board[row][colToCombine].equals(board[row][colToCombine-1])) {
-          board[row][colToCombine-1] = new Tile(board[row][colToCombine].getValue()*2);
-          board[row][colToCombine] = null;
+        if (valueAt(brd, row, colToCombine) != 0 && valueAt(brd, row, colToCombine) == valueAt(brd, row, colToCombine-1)) {
+          replace(brd, row, colToCombine-1, valueAt(brd, row, colToCombine)*2);
+          replace(brd, row, colToCombine, 0);
           for (int i = colToCombine; i < 3; i++) {
-            board[row][i] = board[row][i+1];
-            board[row][i+1] = null;
+            replace(brd, row, i, valueAt(brd, row, i+1);
+            replace(brd, row, i+1, 0);
           }
-          edited = true;
         }
         colToCombine++;
       }
     }
-    if (edited) {
-      addTiles();
-    }
+    return brd;
   }
-  public void swipeUp() {
-    boolean edited = false;
-    for (int col = 0; col < 4; col++) {
-      int notFilled = 0;
-      for (int row = 0; row < 4; row++) {
-        if (board[row][col] != null) {
-          Tile temp = board[row][col];
-          board[row][col] = null;
-          board[notFilled][col] = temp;
-          if (row != notFilled) {
-            edited = true;
-          }
-          notFilled++;
-        }
-      }
-      int rowToCombine = 1;
-      while (rowToCombine <= 3) {
-        if (board[rowToCombine][col] != null && board[rowToCombine][col].equals(board[rowToCombine-1][col])) {
-          board[rowToCombine-1][col] = new Tile(board[rowToCombine][col].getValue()*2);
-          board[rowToCombine][col] = null;
-          for (int i = rowToCombine; i < 3; i++) {
-            board[i][col] = board[i+1][col];
-            board[i+1][col] = null;
-          }
-          edited = true;
-        }
-        rowToCombine++;
-      }
-    }
-    if (edited) {
-      addTiles();
-    }
-  }
-  public void swipeDown() {
-    boolean edited = false;
-    for (int col = 0; col < 4; col++) {
-      int notFilled = 3;
-      for (int row = 3; row >= 0; row--) {
-        if (board[row][col] != null) {
-          Tile temp = board[row][col];
-          board[row][col] = null;
-          board[notFilled][col] = temp;
-          if (notFilled != row) {
-            edited = true;
-          }
-          notFilled--;
-        }
-      }
-      int rowToCombine = 2; 
-      while (rowToCombine >= 0) {
-        if (board[rowToCombine][col] != null && board[rowToCombine][col].equals(board[rowToCombine+1][col])) {
-          board[rowToCombine+1][col] = new Tile(board[rowToCombine][col].getValue()*2);
-          board[rowToCombine][col] = null;
-          for (int i = rowToCombine; i >= 1; i--) {
-            board[i][col] = board[i-1][col];
-            board[i-1][col] = null;
-          }
-          edited = true;
-          rowToCombine--;
-        }
-      }
-    }
-    if (edited) {
-      addTiles();
-    }
-  }
+  
+  //public void swipeUp() {
+  //  boolean edited = false;
+  //  for (int col = 0; col < 4; col++) {
+  //    int notFilled = 0;
+  //    for (int row = 0; row < 4; row++) {
+  //      if (board[row][col] != null) {
+  //        Tile temp = board[row][col];
+  //        board[row][col] = null;
+  //        board[notFilled][col] = temp;
+  //        if (row != notFilled) {
+  //          edited = true;
+  //        }
+  //        notFilled++;
+  //      }
+  //    }
+  //    int rowToCombine = 1;
+  //    while (rowToCombine <= 3) {
+  //      if (board[rowToCombine][col] != null && board[rowToCombine][col].equals(board[rowToCombine-1][col])) {
+  //        board[rowToCombine-1][col] = new Tile(board[rowToCombine][col].getValue()*2);
+  //        board[rowToCombine][col] = null;
+  //        for (int i = rowToCombine; i < 3; i++) {
+  //          board[i][col] = board[i+1][col];
+  //          board[i+1][col] = null;
+  //        }
+  //        edited = true;
+  //      }
+  //      rowToCombine++;
+  //    }
+  //  }
+  //  if (edited) {
+  //    addTiles();
+  //  }
+  //}
 }
