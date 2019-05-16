@@ -1,7 +1,8 @@
-// expectiminimax? https://stackoverflow.com/questions/22342854/what-is-the-optimal-algorithm-for-the-game-2048/22498940#22498940
 class AI {
   public AI() {
   }
+  // the number of moves to search ahead by
+  private int searchAhead = 2;
   
   public void move(Board brd) {
     long b = 0; //<>//
@@ -11,9 +12,8 @@ class AI {
           b = replace(b, r, c, (int)(Math.log(brd.at(r, c).getValue())/Math.log(2)));
         }
       }
-    }
-    int best = move(b); //<>//
-    System.out.println(best);
+    } //<>//
+    int best = move(b);
     switch (best) {
       case 0: brd.swipeUp(); break;
       case 1: brd.swipeLeft(); break;
@@ -29,7 +29,7 @@ class AI {
     for (int i = 0; i < 4; i++) {
       long swiped = swipe(brd, i);
       if (swiped != brd) {
-        int result = expectiminimax(swipe(brd, i), 3, 1);
+        int result = expectiminimax(swipe(brd, i), searchAhead * 2, 1);
         if (result > bestHeuristic) {
           bestHeuristic = result;
           bestMove = i;
@@ -40,14 +40,13 @@ class AI {
   }
   
   // higher heuristic value is better //<>//
-  /** even depth means this node is the AI's move,
-   * odd depth = the game's move (random tile placed) 
+  /** odd depth means this node is the AI's move,
+   * even depth = the game's move (random tile placed) 
    * Returns a value that represents how good the board passed in is*/
   public int expectiminimax(long brd, int depth, double probability) {
-    System.out.println("in expectiminimax, " + brd + " depth: " + depth + " prob: " + probability);
     if (depth == 0 || probability < .001) {
       return heuristic(brd);
-    } else if (depth % 2 == 0) { // our move
+    } else if (depth % 2 != 0) { // our move
       // return value of maximum-valued child node
       int best = 0;
       for (int i = 0; i < 4; i++) {
@@ -73,11 +72,65 @@ class AI {
       return (int)avg / emptyCount;
     }
   }
+  /** Returns how good this board is */
   private int heuristic(long brd) {
-    int ans = Integer.MIN_VALUE;
-    ans += this.blankSpaces(brd) * 5;
+    int ans = 0;
+    ans += this.blankSpaces(brd) * 10;
+    if (valueAt(brd, 0, 0) == 10) {
+      ans += 200;
+    } else if (valueAt(brd, 0, 0) == 11) {
+      ans += 1000;
+    }
+    int maxL = maxLocation(brd);
+    int maxRow = maxL / 4;
+    int maxCol = maxL % 4;
+    long maxRemoved = replace(brd, maxRow, maxCol, 0);
+    int maxL2 = maxLocation(maxRemoved);
+    int maxRow2 = maxL2 / 4;
+    int maxCol2 = maxL2 % 4;
+    long maxRemoved2 = replace(maxRemoved, maxRow2, maxCol2, 0);
+    int maxL3 = maxLocation(maxRemoved2);
+    int maxRow3 = maxL3 / 4;
+    int maxCol3 = maxL3 % 4;
+    if (maxL == 0) {
+      ans += 100;
+      if (valueAt(brd, 1, 0) >= valueAt(brd, 0, 0) - 2 || valueAt(brd, 0, 1) >= valueAt(brd, 0, 0) - 2) { ans += 50; }
+    } else {
+      ans -= 100;
+    }
+    if (valueAt(brd, 1, 0) <= valueAt(brd, 0, 0) / 2 || valueAt(brd, 0, 1) <= valueAt(brd, 0, 0) / 2) {
+      ans -= 100;
+    }
+    ans -= Math.abs(maxRow - maxRow2) == 1 && Math.abs(maxCol - maxCol2) == 1 ? 30 : 0;
+    ans -= Math.abs(maxRow - maxRow3) == 1 && Math.abs(maxCol - maxCol3) == 1 ? 30 : 0;
+    
+    ans += valueAt(brd, 3, 3) <= 1 ? 10 : 0;
+    ans += valueAt(brd, 3, 2) <= 1 ? 9 : 0;
+    ans += valueAt(brd, 2, 3) <= 1 ? 9 : 0;
+    ans += valueAt(brd, 2, 2) <= 1 ? 8 : 0;
+    ans += valueAt(brd, 1, 3) <= 1 ? 8 : 0;
+    ans += valueAt(brd, 3, 1) <= 1 ? 8 : 0;
     return ans;
   } //<>//
+  /** 0  1  2  3
+   *  4  5  6  7
+   *  8  9  10 11
+   *  12 13 14 15 
+   * Returns the location of the maximum value in the board, searching row by row */
+  private int maxLocation(long brd) {
+    int maxLoc = 0;
+    int maxNum = 0;
+    for (int r = 0; r < 4; r++) {
+      for (int c = 0; c < 4; c++) {
+        if (valueAt(brd, r, c) > maxNum) {
+          maxNum = valueAt(brd, r, c);
+          maxLoc = r*4 + c;
+        }
+      }
+    }
+    return maxLoc;
+  }
+  
   private int blankSpaces(long brd) {
     int ans = 0;
     for (int r = 0; r < 4; r++) {

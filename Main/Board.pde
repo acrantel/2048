@@ -39,17 +39,16 @@ class Board {
     textFont(f);
     textAlign(CENTER, CENTER);
     int boardWidth = Math.min(width, height);
-    textSize(boardWidth/6);
     int unitsPerTile = 7;
     int tileWidth = boardWidth*(unitsPerTile-1)/(unitsPerTile*4+1);
-    textSize(tileWidth*0.679);
+    int defaultTextSize = (int)(tileWidth*.8);
     fill(borderColor);
     stroke(borderColor);
     rectMode(CORNER);
     rect(0, 0, boardWidth, boardWidth, boardWidth/50);
     for (int row = 0; row < 4; row++) {
       for (int col = 0; col < 4; col++) {
-          rectMode(CORNER);
+        rectMode(CORNER);
         fill(board[row][col] == null ? emptyColor : board[row][col].getColor());
         stroke(board[row][col] == null ? emptyColor : board[row][col].getColor());
         rect(boardWidth*(col*(unitsPerTile)+1)/(unitsPerTile*4+1), boardWidth*(row*(unitsPerTile)+1)/(unitsPerTile*4+1), tileWidth, tileWidth, tileWidth/20);
@@ -59,8 +58,9 @@ class Board {
           float y = boardWidth*(row*unitsPerTile+1+(unitsPerTile-1)/2.0)/(unitsPerTile*4+1);
           fill(board[row][col].getFontColor());
           rectMode(CENTER);
-          //TODO DRAW THE NUMBER BETTER
-          
+          // draw the number
+          textSize(defaultTextSize);
+          textSize(Math.min(defaultTextSize, defaultTextSize * defaultTextSize / textWidth(""+board[row][col].getValue())));
           text(""+board[row][col].getValue(), x, y, 200, 200);
         }
       }
@@ -200,7 +200,14 @@ class Board {
     if (edited) {
       addTiles();
     }
-    System.out.println("Swipe dwon ended");
+  }
+  // Checks if the game is over
+  public boolean gameOver() {
+    for (int r = 0; r < 4; r++) {
+      for (int c = 0; c < 4; c++) {
+      }
+    }
+    return false;
   }
   /** Precondition: There must be at least one space open on the board */
   private void addTiles() {
