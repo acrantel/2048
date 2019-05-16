@@ -77,9 +77,11 @@ class AI {
     int ans = 0;
     ans += this.blankSpaces(brd) * 10;
     if (valueAt(brd, 0, 0) == 10) {
-      ans += 200;
+      ans += 100;
     } else if (valueAt(brd, 0, 0) == 11) {
-      ans += 1000;
+      ans += 200;
+    } else if (valueAt(brd, 0, 0) > 11) {
+      ans += 300;
     }
     int maxL = maxLocation(brd);
     int maxRow = maxL / 4;
@@ -92,26 +94,69 @@ class AI {
     int maxL3 = maxLocation(maxRemoved2);
     int maxRow3 = maxL3 / 4;
     int maxCol3 = maxL3 % 4;
+    long maxRemoved3 = replace(maxRemoved2, maxRow3, maxCol3, 0);
+    int maxL4 = maxLocation(maxRemoved3);
+    int maxRow4 = maxL4 / 4;
+    int maxCol4 = maxL4 % 4;
     if (maxL == 0) {
-      ans += 100;
+      ans += 1000;
       if (valueAt(brd, 1, 0) >= valueAt(brd, 0, 0) - 2 || valueAt(brd, 0, 1) >= valueAt(brd, 0, 0) - 2) { ans += 50; }
     } else {
       ans -= 100;
     }
-    if (valueAt(brd, 1, 0) <= valueAt(brd, 0, 0) / 2 || valueAt(brd, 0, 1) <= valueAt(brd, 0, 0) / 2) {
+    if (valueAt(brd, 1, 0) <= valueAt(brd, 0, 0) - 2 || valueAt(brd, 0, 1) <= valueAt(brd, 0, 0) - 2) {
       ans -= 100;
     }
-    ans -= Math.abs(maxRow - maxRow2) == 1 && Math.abs(maxCol - maxCol2) == 1 ? 30 : 0;
-    ans -= Math.abs(maxRow - maxRow3) == 1 && Math.abs(maxCol - maxCol3) == 1 ? 30 : 0;
+    ans -= Math.abs(maxRow - maxRow2) == 1 && Math.abs(maxCol - maxCol2) == 1 ? 200 : 0;
+    ans -= Math.abs(maxRow - maxRow3) == 1 && Math.abs(maxCol - maxCol3) == 1 ? 200 : 0;
+    ans += Math.abs(maxRow - maxRow2) == 1 && Math.abs(maxCol - maxCol2) == 0 ? 300 : 0;
+    ans += Math.abs(maxRow - maxRow2) == 0 && Math.abs(maxCol - maxCol2) == 1 ? 300 : 0;
+    ans += Math.abs(maxRow3 - maxRow2) == 1 && Math.abs(maxCol3 - maxCol2) == 0 ? 200 : 0;
+    ans += Math.abs(maxRow3 - maxRow2) == 0 && Math.abs(maxCol3 - maxCol2) == 1 ? 200 : 0;
+    ans += Math.abs(maxRow3 - maxRow4) == 1 && Math.abs(maxCol3 - maxCol4) == 0 ? 100 : 0;
+    ans += Math.abs(maxRow3 - maxRow4) == 0 && Math.abs(maxCol3 - maxCol4) == 1 ? 100 : 0;
     
     ans += valueAt(brd, 3, 3) <= 1 ? 10 : 0;
     ans += valueAt(brd, 3, 2) <= 1 ? 9 : 0;
     ans += valueAt(brd, 2, 3) <= 1 ? 9 : 0;
-    ans += valueAt(brd, 2, 2) <= 1 ? 8 : 0;
-    ans += valueAt(brd, 1, 3) <= 1 ? 8 : 0;
-    ans += valueAt(brd, 3, 1) <= 1 ? 8 : 0;
+    ans += valueAt(brd, 2, 2) <= 2 ? 8 : 0;
+    ans += valueAt(brd, 1, 3) <= 2 ? 8 : 0;
+    ans += valueAt(brd, 3, 1) <= 2 ? 8 : 0;
+    int maxMergesPossible = 0;
+    for (int i = 0; i < 4; i++) {
+      int res = getMerges(brd, i);
+      if (res > maxMergesPossible) {
+        maxMergesPossible = res;
+      }
+    }
+    ans += Math.pow(2, maxMergesPossible) * 10; 
+    
+    for (int sum = 0; sum <= 6; sum++) {
+      for (int r = 0; r <= 3; r++) {
+        int c = sum - r;
+        if (c >= 0 && c <= 3) {
+          ans += r+1 <= 3 && valueAt(brd, r+1, c) <= valueAt(brd, r, c) ? 50 : 0;
+          ans += r+1 <= 3 && c+1 <= 3 && valueAt(brd, r+1, c+1) <= valueAt(brd, r, c) ? 50 : 0;
+          ans += c+1 <= 3 && valueAt(brd, r, c+1) <= valueAt(brd, r, c) ? 50 : 0;
+        }
+      }
+    }
     return ans;
   } //<>//
+  
+  private int getMerges(long brd, int dir) {
+    long res = swipe(brd, dir);
+    int beforeCount = 0;
+    int afterCount = 0;
+    for (int r = 0; r < 4; r++) {
+      for (int c = 0; c < 4; c++) {
+        beforeCount = valueAt(brd, r, c) != 0 ? 1 : 0;
+        afterCount = valueAt(res, r, c) != 0 ? 1 : 0;
+      }
+    }
+    return afterCount - beforeCount;
+  }
+  
   /** 0  1  2  3
    *  4  5  6  7
    *  8  9  10 11
