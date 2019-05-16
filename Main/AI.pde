@@ -4,7 +4,7 @@ class AI {
   }
   
   public void move(Board brd) {
-    long b = 0;
+    long b = 0; //<>//
     for (int r = 0; r < 4; r++) {
       for (int c = 0; c < 4; c++) {
         if (brd.at(r, c) != null) {
@@ -12,40 +12,49 @@ class AI {
         }
       }
     }
-    int best = move(b);
+    int best = move(b); //<>//
+    System.out.println(best);
     switch (best) {
-      case 0: brd.swipeUp();
-      case 1: brd.swipeLeft();
-      case 2: brd.swipeDown();
-      case 3: brd.swipeRight();
+      case 0: brd.swipeUp(); break;
+      case 1: brd.swipeLeft(); break;
+      case 2: brd.swipeDown(); break;
+      case 3: brd.swipeRight(); break;
+      default: System.out.println("Bug in move - reached default move");
     }
   }
-  
+   //<>//
   public int move(long brd) {
     int bestMove = 0;
-    int bestHeuristic = 0;
+    int bestHeuristic = Integer.MIN_VALUE;
     for (int i = 0; i < 4; i++) {
-      int result = expectiminimax(swipe(brd, i), 3, 1);
-      if (result > bestHeuristic) {
-        bestHeuristic = result;
-        bestMove = i;
+      long swiped = swipe(brd, i);
+      if (swiped != brd) {
+        int result = expectiminimax(swipe(brd, i), 3, 1);
+        if (result > bestHeuristic) {
+          bestHeuristic = result;
+          bestMove = i;
+        }
       }
     }
     return bestMove;
   }
   
-  // higher heuristic value is better
+  // higher heuristic value is better //<>//
   /** even depth means this node is the AI's move,
    * odd depth = the game's move (random tile placed) 
    * Returns a value that represents how good the board passed in is*/
   public int expectiminimax(long brd, int depth, double probability) {
+    System.out.println("in expectiminimax, " + brd + " depth: " + depth + " prob: " + probability);
     if (depth == 0 || probability < .001) {
       return heuristic(brd);
     } else if (depth % 2 == 0) { // our move
       // return value of maximum-valued child node
       int best = 0;
       for (int i = 0; i < 4; i++) {
-        best = Math.max(best, expectiminimax(swipe(brd, i), depth-1, probability));
+        long swipeResult = swipe(brd, i);
+        if (brd != swipeResult) {
+          best = Math.max(best, expectiminimax(swipe(brd, i), depth-1, probability));
+        }
       }
       return best;
     } else { // the computer's random placement of a tile
@@ -65,8 +74,21 @@ class AI {
     }
   }
   private int heuristic(long brd) {
-    return (int)(brd/Integer.MAX_VALUE);
+    int ans = Integer.MIN_VALUE;
+    ans += this.blankSpaces(brd) * 5;
+    return ans;
   } //<>//
+  private int blankSpaces(long brd) {
+    int ans = 0;
+    for (int r = 0; r < 4; r++) {
+      for (int c = 0; c < 4; c++) {
+        if (valueAt(brd, r, c) == 0) {
+          ans++;
+        }
+      }
+    }
+    return ans;
+  }
   
   /** Replaces the 4 bit section at row/col with the least 4 bits of toReplace.
    * Rows and columns start counting from 0. */

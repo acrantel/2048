@@ -35,7 +35,7 @@ class Board {
     board[rand2 / 4][rand2 % 4] = new Tile(2);
   }
   
-  public void draw() {
+  public void drawBoard() {
     textFont(f);
     textAlign(CENTER, CENTER);
     int boardWidth = Math.min(width, height);
@@ -193,13 +193,14 @@ class Board {
             board[i-1][col] = null;
           }
           edited = true;
-          rowToCombine--;
         }
+        rowToCombine--;
       }
     }
     if (edited) {
       addTiles();
     }
+    System.out.println("Swipe dwon ended");
   }
   /** Precondition: There must be at least one space open on the board */
   private void addTiles() {

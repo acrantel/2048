@@ -9,6 +9,5 @@ void setup() {
   
 }
 void draw() {
-  ai.move(mainBoard);
-  mainBoard.draw();
+  mainBoard.drawBoard();
 }
