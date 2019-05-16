@@ -203,8 +203,14 @@ class Board {
   }
   // Checks if the game is over
   public boolean gameOver() {
-    for (int r = 0; r < 4; r++) {
-      for (int c = 0; c < 4; c++) {
+    boolean over = true;
+    for (int r = 0; r <= 2; r++) {
+      for (int c = 0; c <= 2; c++) {
+        if (board[r][c] == null) {
+          over = false;
+        } else if (board[r][c].equals(board[r][c+1]) || board[r][c].equals(board[r+1][c]) || board[r][c].equals(board[r+1][c+1])) {
+          over = false;
+        }
       }
     }
     return false;
