@@ -135,9 +135,9 @@ class AI {
       for (int r = 0; r <= 3; r++) {
         int c = sum - r;
         if (c >= 0 && c <= 3) {
-          ans += r+1 <= 3 && valueAt(brd, r+1, c) <= valueAt(brd, r, c) ? 50 : 0;
-          ans += r+1 <= 3 && c+1 <= 3 && valueAt(brd, r+1, c+1) <= valueAt(brd, r, c) ? 50 : 0;
-          ans += c+1 <= 3 && valueAt(brd, r, c+1) <= valueAt(brd, r, c) ? 50 : 0;
+          ans += r+1 <= 3 && valueAt(brd, r+1, c) <= valueAt(brd, r, c) ? 70 : 0;
+          ans += r+1 <= 3 && c+1 <= 3 && valueAt(brd, r+1, c+1) <= valueAt(brd, r, c) ? 70 : 0;
+          ans += c+1 <= 3 && valueAt(brd, r, c+1) <= valueAt(brd, r, c) ? 70 : 0;
         }
       }
     }
