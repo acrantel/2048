@@ -3,6 +3,7 @@ class Board {
   private Tile[][] board;
   private color borderColor;
   private color emptyColor;
+  private int moves;
   
   /** Initializes a new 4x4 Board with two tiles
    * in random places, and default colors */
@@ -11,6 +12,7 @@ class Board {
     reset();
     borderColor = color(188, 173, 162);
     emptyColor = color(206, 193, 181);
+    moves = 0;
   }
   
   public Tile at(int r, int c) {
@@ -204,16 +206,28 @@ class Board {
   // Checks if the game is over
   public boolean gameOver() {
     boolean over = true;
-    for (int r = 0; r <= 2; r++) {
-      for (int c = 0; c <= 2; c++) {
+    for (int r = 0; r <= 3; r++) {
+      for (int c = 0; c <= 3; c++) {
         if (board[r][c] == null) {
           over = false;
-        } else if (board[r][c].equals(board[r][c+1]) || board[r][c].equals(board[r+1][c]) || board[r][c].equals(board[r+1][c+1])) {
-          over = false;
+        } else {
+          if (r <= 2) {
+            over = board[r][c].equals(board[r+1][c]) ? false : over;
+          }
+          if (c <= 2) {
+            over = board[r][c].equals(board[r][c+1]) ? false : over;
+          }
         }
       }
     }
-    return false;
+    return over;
+  }
+  
+  public void addMove() {
+    moves++;
+  }
+  public int getMoves() {
+    return moves;
   }
   /** Precondition: There must be at least one space open on the board */
   private void addTiles() {

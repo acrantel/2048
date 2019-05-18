@@ -9,8 +9,9 @@ void keyPressed() {
     } else if (key == 'd' || key == 'D' || (key == CODED && keyCode == RIGHT)) {
       mainBoard.swipeRight();
     } else if (key == ' ' || key == 'm') {
-      System.out.println("space");
-      ai.move(mainBoard);
+      if (!mainBoard.gameOver()) {
+        ai.move(mainBoard);
+      }
     }
   
 }

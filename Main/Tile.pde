@@ -29,6 +29,10 @@ class Tile {
   }
 
   public boolean equals(Tile o) { 
+    if (o == null) {
+      return false;
+    } else {
       return (o.getValue() == getValue());
+    }
   }
 }
