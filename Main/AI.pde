@@ -3,7 +3,8 @@ class AI {
   }
   // the number of moves to search ahead by
   private int searchAhead = 2;
-  
+  private Map<Long, Integer> transposition = new HashMap<Long, Integer>();
+
   public void move(Board brd) {
     long b = 0; //<>//
     for (int r = 0; r < 4; r++) {
@@ -22,16 +23,16 @@ class AI {
       default: System.out.println("Bug in move - reached default move");
     }
   }
-   //<>//
+  
   public int move(long brd) {
     int bestMove = 0;
     int bestHeuristic = Integer.MIN_VALUE;
     for (int i = 0; i < 4; i++) {
       long swiped = swipe(brd, i);
       if (swiped != brd) {
-        int result = expectiminimax(swipe(brd, i), searchAhead * 2, 1);
+        int result = expectiminimax(swipe(brd, i), searchAhead * 2, 1); //<>//
         if (result > bestHeuristic) {
-          bestHeuristic = result;
+          bestHeuristic = result; //<>//
           bestMove = i;
         }
       }
@@ -71,9 +72,10 @@ class AI {
       }
       return (int)avg / emptyCount;
     }
-  }
-  /** Returns how good this board is */
+  } /** Returns how good this board is */
   private int heuristic(long brd) {
+    Integer fromTrans = transposition.get(brd);
+    if (fromTrans != null) { return fromTrans; }
     int ans = 0;
     ans += this.blankSpaces(brd) * 10;
     if (valueAt(brd, 0, 0) == 10) {
@@ -135,12 +137,35 @@ class AI {
       for (int r = 0; r <= 3; r++) {
         int c = sum - r;
         if (c >= 0 && c <= 3) {
-          ans += r+1 <= 3 && valueAt(brd, r+1, c) <= valueAt(brd, r, c) ? 50 : 0;
-          ans += r+1 <= 3 && c+1 <= 3 && valueAt(brd, r+1, c+1) <= valueAt(brd, r, c) ? 50 : 0;
-          ans += c+1 <= 3 && valueAt(brd, r, c+1) <= valueAt(brd, r, c) ? 50 : 0;
+          ans += r+1 <= 3 && valueAt(brd, r+1, c) <= valueAt(brd, r, c) ? 70 : 0;
+          ans += r+1 <= 3 && c+1 <= 3 && valueAt(brd, r+1, c+1) <= valueAt(brd, r, c) ? 70 : 0;
+          ans += c+1 <= 3 && valueAt(brd, r, c+1) <= valueAt(brd, r, c) ? 70 : 0;
         }
       }
     }
+    long removed = maxRemoved;
+    int prevMaxRow = maxRow;
+    int prevMaxCol = maxCol;
+    int vc = -1;
+    int vr = -1;
+    for (int i = 0; i < 5; i++) {
+      int maxLocation = maxLocation(removed);
+      long newRemoved = replace(removed, maxLocation / 4, maxLocation % 4, 0);
+      if (valueAt(brd, maxLocation/4, maxLocation % 4) <= valueAt(brd, prevMaxRow, prevMaxCol) - 3) {
+        ans += 100;
+      } else if (valueAt(brd, maxLocation/4, maxLocation% 4) <= valueAt(brd, prevMaxRow, prevMaxCol) - 2) {
+        ans += 50;
+      }
+      if (vc < 0 && vr < 0) {
+        vc = (maxLocation % 4) - maxCol;
+        vr = (maxLocation / 4) - maxRow;
+      } else if (prevMaxRow + vr == maxLocation / 4 && prevMaxCol + vc == maxLocation % 4) {
+        ans += 30;
+      } 
+      removed = newRemoved;
+      prevMaxCol = maxLocation % 4;
+      prevMaxRow = maxLocation / 4;
+    }    
     return ans;
   } //<>//
   
@@ -254,6 +279,7 @@ class AI {
           brd = replace(brd, row, colToCombine-1, valueAt(brd, row, colToCombine)+1);
           brd = replace(brd, row, colToCombine, 0);
           for (int i = colToCombine; i < 3; i++) {
+            brd = replace(brd, row, i, valueAt(brd, row, i+1));
             brd = replace(brd, row, i+1, 0);
           }
         }
