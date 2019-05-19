@@ -5,6 +5,7 @@ class AI {
   private int searchAhead = 2;
   private Map<Long, Integer> transposition = new HashMap<Long, Integer>();
 
+
   public void move(Board brd) {
     long b = 0; //<>//
     for (int r = 0; r < 4; r++) {
@@ -16,23 +17,23 @@ class AI {
     } //<>//
     int best = move(b);
     switch (best) {
-      case 0: brd.swipeUp(); break;
-      case 1: brd.swipeLeft(); break;
-      case 2: brd.swipeDown(); break;
-      case 3: brd.swipeRight(); break;
-      default: System.out.println("Bug in move - reached default move");
+      case 0: brd.swipeUp(); brd.addMove(); break;
+      case 1: brd.swipeLeft(); brd.addMove(); break;
+      case 2: brd.swipeDown(); brd.addMove(); break;
+      case 3: brd.swipeRight(); brd.addMove(); break;
+      case -1: break;
     }
   }
   
   public int move(long brd) {
-    int bestMove = 0;
+    int bestMove = -1;
     int bestHeuristic = Integer.MIN_VALUE;
     for (int i = 0; i < 4; i++) {
       long swiped = swipe(brd, i);
-      if (swiped != brd) {
-        int result = expectiminimax(swipe(brd, i), searchAhead * 2, 1); //<>//
-        if (result > bestHeuristic) {
-          bestHeuristic = result; //<>//
+      if (swiped != brd) { //<>//
+        int result = expectiminimax(swipe(brd, i), searchAhead * 2, 1);
+        if (result > bestHeuristic) { //<>//
+          bestHeuristic = result;
           bestMove = i;
         }
       }
@@ -101,7 +102,7 @@ class AI {
     int maxRow4 = maxL4 / 4;
     int maxCol4 = maxL4 % 4;
     if (maxL == 0) {
-      ans += 1000;
+      ans += 1500;
       if (valueAt(brd, 1, 0) >= valueAt(brd, 0, 0) - 2 || valueAt(brd, 0, 1) >= valueAt(brd, 0, 0) - 2) { ans += 50; }
     } else {
       ans -= 100;
@@ -152,22 +153,22 @@ class AI {
       int maxLocation = maxLocation(removed);
       long newRemoved = replace(removed, maxLocation / 4, maxLocation % 4, 0);
       if (valueAt(brd, maxLocation/4, maxLocation % 4) <= valueAt(brd, prevMaxRow, prevMaxCol) - 3) {
-        ans += 100;
+        ans += 200;
       } else if (valueAt(brd, maxLocation/4, maxLocation% 4) <= valueAt(brd, prevMaxRow, prevMaxCol) - 2) {
-        ans += 50;
+        ans += 100;
       }
       if (vc < 0 && vr < 0) {
         vc = (maxLocation % 4) - maxCol;
         vr = (maxLocation / 4) - maxRow;
       } else if (prevMaxRow + vr == maxLocation / 4 && prevMaxCol + vc == maxLocation % 4) {
-        ans += 30;
+        ans += 50;
       } 
       removed = newRemoved;
       prevMaxCol = maxLocation % 4;
       prevMaxRow = maxLocation / 4;
     }    
     return ans;
-  } //<>//
+  }
   
   private int getMerges(long brd, int dir) {
     long res = swipe(brd, dir);

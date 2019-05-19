@@ -5,6 +5,7 @@ class Board {
   private color emptyColor;
   private color outsideColor;
   private int moves;
+  private int score;
   
   /** Initializes a new 4x4 Board with two tiles
    * in random places, and default colors */
@@ -65,10 +66,17 @@ class Board {
         }
       }
     }
+    // draw the # of moves and the score
+    fill(color(104, 89, 81));
+    rectMode(CORNER);
+    textAlign(CENTER, CENTER);
+    textSize((width - boardWidth)/4);
+    text("Moves\n" + getMoves(), boardWidth, boardWidth/6, width - boardWidth, width - boardWidth);
+    text("Score\n" + getScore(), boardWidth, boardWidth*1/2, width - boardWidth, width - boardWidth);
       
   }
   /** Returns the number of points from this swipe (each merge is worth points) */
-  public int swipeRight() {
+  public void swipeRight() {
     int points = 0;
     boolean edited = false;
     // implement the swipe and merge right
@@ -104,10 +112,10 @@ class Board {
     if (edited) {
       addTiles();
     }
-    return points;
+    score += points;
   }
   /** Returns the number of points from this swipe (each merge is worth points) */
-  public int swipeLeft() {
+  public void swipeLeft() {
     int points = 0;
     boolean edited = false;
     for (int row = 0; row < 4; row++) {
@@ -141,11 +149,11 @@ class Board {
     if (edited) {
       addTiles();
     }
-    return points;
+    score += points;
   }
   
   /** Returns the number of points from this swipe (each merge is worth points) */
-  public int swipeUp() {
+  public void swipeUp() {
     int points = 0;
     boolean edited = false;
     for (int col = 0; col < 4; col++) {
@@ -179,11 +187,11 @@ class Board {
     if (edited) {
       addTiles();
     }
-    return points;
+    score += points;
   }
   
   /** Returns the number of points from this swipe (each merge is worth points) */
-  public int swipeDown() {
+  public void swipeDown() {
     int points = 0;
     boolean edited = false;
     for (int col = 0; col < 4; col++) {
@@ -217,7 +225,7 @@ class Board {
     if (edited) {
       addTiles();
     }
-    return points;
+    score += points;
   }
   // Checks if the game is over
   public boolean gameOver() {
@@ -244,6 +252,9 @@ class Board {
   }
   public int getMoves() {
     return moves;
+  }
+  public int getScore() {
+    return score;
   }
   /** Precondition: There must be at least one space open on the board */
   private void addTiles() {
