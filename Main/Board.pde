@@ -3,6 +3,7 @@ class Board {
   private Tile[][] board;
   private color borderColor;
   private color emptyColor;
+  private color outsideColor;
   private int moves;
   
   /** Initializes a new 4x4 Board with two tiles
@@ -12,6 +13,7 @@ class Board {
     reset();
     borderColor = color(188, 173, 162);
     emptyColor = color(206, 193, 181);
+    outsideColor = color(251, 249, 240);
     moves = 0;
   }
   
@@ -40,10 +42,13 @@ class Board {
   public void drawBoard() {
     textFont(f);
     textAlign(CENTER, CENTER);
-    int boardWidth = Math.min(width, height);
+    int boardWidth = Math.min(width * 3/4, height);
     int unitsPerTile = 7;
     int tileWidth = boardWidth*(unitsPerTile-1)/(unitsPerTile*4+1);
-    int defaultTextSize = (int)(tileWidth*.8);
+    int defaultTextSize = (int)(tileWidth*.6);
+    fill(outsideColor);
+    stroke(outsideColor);
+    rect(0, 0, width, height);
     fill(borderColor);
     stroke(borderColor);
     rectMode(CORNER);
@@ -51,26 +56,20 @@ class Board {
     for (int row = 0; row < 4; row++) {
       for (int col = 0; col < 4; col++) {
         rectMode(CORNER);
-        fill(board[row][col] == null ? emptyColor : board[row][col].getColor());
-        stroke(board[row][col] == null ? emptyColor : board[row][col].getColor());
-        rect(boardWidth*(col*(unitsPerTile)+1)/(unitsPerTile*4+1), boardWidth*(row*(unitsPerTile)+1)/(unitsPerTile*4+1), tileWidth, tileWidth, tileWidth/20);
-        if (board[row][col] != null) { // draw the number
-          fill(board[row][col].getFontColor());
-          float x = boardWidth*(col*unitsPerTile+1+(unitsPerTile-1)/2.0)/(unitsPerTile*4+1);
-          float y = boardWidth*(row*unitsPerTile+1+(unitsPerTile-1)/2.0)/(unitsPerTile*4+1);
-          fill(board[row][col].getFontColor());
-          rectMode(CENTER);
-          // draw the number
-          textSize(defaultTextSize);
-          textSize(Math.min(defaultTextSize, defaultTextSize * defaultTextSize / textWidth(""+board[row][col].getValue())));
-          text(""+board[row][col].getValue(), x, y, 200, 200);
+        if (board[row][col] == null) {
+          fill(emptyColor);
+          stroke(emptyColor);
+          rect(boardWidth*(col*(unitsPerTile)+1)/(unitsPerTile*4+1), boardWidth*(row*(unitsPerTile)+1)/(unitsPerTile*4+1), tileWidth, tileWidth, tileWidth/20);
+        } else {
+          board[row][col].drawTile(boardWidth*(col*(unitsPerTile)+1)/(unitsPerTile*4+1), boardWidth*(row*(unitsPerTile)+1)/(unitsPerTile*4+1), tileWidth, tileWidth, tileWidth/20, defaultTextSize);
         }
       }
     }
       
   }
-  
-  public void swipeRight() {
+  /** Returns the number of points from this swipe (each merge is worth points) */
+  public int swipeRight() {
+    int points = 0;
     boolean edited = false;
     // implement the swipe and merge right
     for (int row = 0; row < 4; row++) {
@@ -86,9 +85,11 @@ class Board {
           notFilled--;
         }
       }
+      // do merges
       int colToCombine = 2;
       while (colToCombine >= 0) {
         if (board[row][colToCombine] != null && board[row][colToCombine].equals(board[row][colToCombine+1])) {
+          points += board[row][colToCombine].getValue()*2;
           board[row][colToCombine+1] = new Tile(board[row][colToCombine].getValue()*2);
           board[row][colToCombine] = null;
           for (int i = colToCombine; i >= 1; i--) {
@@ -103,8 +104,11 @@ class Board {
     if (edited) {
       addTiles();
     }
+    return points;
   }
-  public void swipeLeft() {
+  /** Returns the number of points from this swipe (each merge is worth points) */
+  public int swipeLeft() {
+    int points = 0;
     boolean edited = false;
     for (int row = 0; row < 4; row++) {
       int notFilled = 0;
@@ -122,6 +126,7 @@ class Board {
       int colToCombine = 1;
       while (colToCombine <= 3) {
         if (board[row][colToCombine] != null && board[row][colToCombine].equals(board[row][colToCombine-1])) {
+          points += board[row][colToCombine].getValue()*2;
           board[row][colToCombine-1] = new Tile(board[row][colToCombine].getValue()*2);
           board[row][colToCombine] = null;
           for (int i = colToCombine; i < 3; i++) {
@@ -136,8 +141,12 @@ class Board {
     if (edited) {
       addTiles();
     }
+    return points;
   }
-  public void swipeUp() {
+  
+  /** Returns the number of points from this swipe (each merge is worth points) */
+  public int swipeUp() {
+    int points = 0;
     boolean edited = false;
     for (int col = 0; col < 4; col++) {
       int notFilled = 0;
@@ -155,6 +164,7 @@ class Board {
       int rowToCombine = 1;
       while (rowToCombine <= 3) {
         if (board[rowToCombine][col] != null && board[rowToCombine][col].equals(board[rowToCombine-1][col])) {
+          points += board[rowToCombine][col].getValue()*2;
           board[rowToCombine-1][col] = new Tile(board[rowToCombine][col].getValue()*2);
           board[rowToCombine][col] = null;
           for (int i = rowToCombine; i < 3; i++) {
@@ -169,8 +179,12 @@ class Board {
     if (edited) {
       addTiles();
     }
+    return points;
   }
-  public void swipeDown() {
+  
+  /** Returns the number of points from this swipe (each merge is worth points) */
+  public int swipeDown() {
+    int points = 0;
     boolean edited = false;
     for (int col = 0; col < 4; col++) {
       int notFilled = 3;
@@ -188,6 +202,7 @@ class Board {
       int rowToCombine = 2; 
       while (rowToCombine >= 0) {
         if (board[rowToCombine][col] != null && board[rowToCombine][col].equals(board[rowToCombine+1][col])) {
+          points += board[rowToCombine][col].getValue()*2;
           board[rowToCombine+1][col] = new Tile(board[rowToCombine][col].getValue()*2);
           board[rowToCombine][col] = null;
           for (int i = rowToCombine; i >= 1; i--) {
@@ -202,6 +217,7 @@ class Board {
     if (edited) {
       addTiles();
     }
+    return points;
   }
   // Checks if the game is over
   public boolean gameOver() {

@@ -1,9 +1,14 @@
 class AI {
   public AI() {
+    setUpMoveEffectTable();
+    System.out.println("move left of 1 1 2 2" + moveEffect[0][13073]);
   }
-  // the number of moves to search ahead by
-  private int searchAhead = 2;
   
+  private short[][] moveEffect;
+  
+  // the number of moves to search ahead by
+  private int searchAhead = 3;
+  private Map<Long, Integer> transposition = new HashMap<Long, Integer>();
   public void move(Board brd) {
     long b = 0; //<>//
     for (int r = 0; r < 4; r++) {
@@ -29,7 +34,7 @@ class AI {
     for (int i = 0; i < 4; i++) {
       long swiped = swipe(brd, i);
       if (swiped != brd) {
-        int result = expectiminimax(swipe(brd, i), searchAhead * 2, 1);
+        int result = expectiminimax(swiped, searchAhead * 2, 1);
         if (result > bestHeuristic) {
           bestHeuristic = result;
           bestMove = i;
@@ -74,6 +79,8 @@ class AI {
   }
   /** Returns how good this board is */
   private int heuristic(long brd) {
+    Integer fromTrans = transposition.get(brd);
+    if (fromTrans != null) { return fromTrans; }
     int ans = 0;
     ans += this.blankSpaces(brd) * 10;
     if (valueAt(brd, 0, 0) == 10) {
@@ -141,6 +148,29 @@ class AI {
         }
       }
     }
+    long removed = maxRemoved;
+    int prevMaxRow = maxRow;
+    int prevMaxCol = maxCol;
+    int vc = -1;
+    int vr = -1;
+    for (int i = 0; i < 5; i++) {
+      int maxLocation = maxLocation(removed);
+      long newRemoved = replace(removed, maxLocation / 4, maxLocation % 4, 0);
+      if (valueAt(brd, maxLocation/4, maxLocation % 4) <= valueAt(brd, prevMaxRow, prevMaxCol) - 3) {
+        ans += 100;
+      } else if (valueAt(brd, maxLocation/4, maxLocation% 4) <= valueAt(brd, prevMaxRow, prevMaxCol) - 2) {
+        ans += 50;
+      }
+      if (vc < 0 && vr < 0) {
+        vc = (maxLocation % 4) - maxCol;
+        vr = (maxLocation / 4) - maxRow;
+      } else if (prevMaxRow + vr == maxLocation / 4 && prevMaxCol + vc == maxLocation % 4) {
+        ans += 30;
+      } 
+      removed = newRemoved;
+      prevMaxCol = maxLocation % 4;
+      prevMaxRow = maxLocation / 4;
+    }    
     return ans;
   } //<>//
   
@@ -316,5 +346,66 @@ class AI {
     }
     return brd;
   }
+  /** Least significant bits of a "row" represent the left side of the board */
+  private void setUpMoveEffectTable() {
+    moveEffect = new short[2][(int)Math.pow(2, 16) + 5];
+    // shift left & merge
+    for (int row = 0; row <= 65535; row += 1) {
+      if (row == 13073) {
+        System.out.println("13073"); //<>//
+      }
+      // shift
+      int newRow = row;
+      int notFilled = 0;
+      for (int col = 0; col <= 3; col++) {
+        if (valueAt((short)newRow, col) != 0) {
+          int temp = valueAt((short)newRow, col);
+          newRow = replace((short)newRow, col, 0);
+          newRow = replace((short)newRow, notFilled, temp);
+          notFilled++;
+        }
+      }
+      // merge
+      int colToCombine = 1;
+      while (colToCombine <= 3) {
+        if (valueAt((short)newRow, colToCombine) != 0 && valueAt((short) row, colToCombine) == valueAt((short) row, colToCombine-1)) {
+          newRow = replace((short)newRow, colToCombine-1, valueAt((short) row, colToCombine)+1);
+          newRow = (newRow & (65535 >>> (4*(4 - colToCombine)) ) ) | ((newRow >>> 4) & (~(65535 >>> (4*(4-colToCombine)) ) ) );
+        }
+        colToCombine++;
+      }
+      moveEffect[0][row] = (short)newRow;
+    }
+    // shift right and merge
+    for (int row = 0; row <= 65535; row += 1) { // lsb of row = left side of board
+      // shift
+      int newRow = row;
+      int notFilled = 3;
+      for (int col = 3; col >= 0; col--) {
+        if (valueAt(newRow, col) != 0) {
+          int temp = valueAt(newRow, col);
+          newRow = replace(newRow, col, 0);
+          newRow = replace(newRow, notFilled, temp);
+          notFilled--;
+        }
+      }
+      // merge
+      int colToCombine = 2;
+      while (colToCombine >= 0) {
+        if (valueAt(newRow, colToCombine) != 0 && valueAt(row, colToCombine) == valueAt(row, colToCombine+1)) {
+          newRow = replace(newRow, colToCombine+1, valueAt(row, colToCombine)+1);
+          newRow = (newRow & (65535 << (4*(colToCombine+1)))) | ((newRow << 4) & (~(65535 << (4*(colToCombine+1)))));
+        }
+        colToCombine--;
+      }
+      moveEffect[1][row] = (short) newRow;
+    }
+  }
   
+  private int valueAt(int row, int col) {
+    return (row & (15 << col*4)) >>> (col*4);
+  }
+  private short replace(int row, int col, int replaceTo) {
+    return (short)((row & (~(15 << (col*4))) ) | ((replaceTo & 15) << (col * 4)));
+  }
 }

@@ -20,12 +20,12 @@ class Tile {
   }
   public color getColor() {
     int index = (int) (Math.log(getValue())/Math.log(2))-1; 
-     return colors[index];
+     return colors[Math.min(index, colors.length-1)];
   }
   // returns the font color of the number for this tile
   public color getFontColor() {
     int index = (int)(Math.log(getValue())/Math.log(2))-1;
-    return fontColors[index];
+    return fontColors[Math.min(index, colors.length-1)];
   }
 
   public boolean equals(Tile o) { 
@@ -34,5 +34,16 @@ class Tile {
     } else {
       return (o.getValue() == getValue());
     }
+  }
+  public void drawTile(int x, int y, int tileWidth, int tileHeight, int curvature, int textSize) {
+    fill(getColor());
+    stroke(getColor());
+    rect(x, y, tileWidth, tileHeight, curvature);
+    fill(getFontColor());
+    rectMode(CORNER);
+    textAlign(CENTER, CENTER);
+    textSize(textSize);
+    textSize(Math.min(textSize, tileWidth*.8 * textSize / textWidth(""+getValue())));
+    text(""+getValue(), x, y, tileWidth, tileHeight);
   }
 }
