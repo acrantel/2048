@@ -2,7 +2,7 @@ class AI {
   public AI() {
   }
   // the number of moves to search ahead by
-  private int searchAhead = 2;
+  private int searchAhead = 3;
   private Map<Node, Integer> transposition = new HashMap<Node, Integer>();
   
   class Node {
