@@ -73,6 +73,8 @@ class Board {
     textSize((width - boardWidth)/4);
     text("Moves\n" + getMoves(), boardWidth, boardWidth/6, width - boardWidth, width - boardWidth);
     text("Score\n" + getScore(), boardWidth, boardWidth*1/2, width - boardWidth, width - boardWidth);
+    textSize(15);
+    text(""+ai.transposition.size(), boardWidth, boardWidth * 5/6);
       
   }
   /** Returns the number of points from this swipe (each merge is worth points) */

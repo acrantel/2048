@@ -3,8 +3,14 @@ class AI {
   }
   // the number of moves to search ahead by
   private int searchAhead = 2;
-  private Map<Long, Integer> transposition = new HashMap<Long, Integer>();
-
+  private Map<Node, Integer> transposition = new HashMap<Node, Integer>();
+  
+  class Node {
+    long brd;
+    int depth;
+    public Node(long b, int d) { brd = b; depth = d; }
+    public boolean equals(Node o) { return o.brd == brd && o.depth == depth; }
+  }
 
   public void move(Board brd) {
     long b = 0; //<>//
@@ -24,15 +30,15 @@ class AI {
       case -1: break;
     }
   }
-  
+   //<>//
   public int move(long brd) {
-    int bestMove = -1;
+    int bestMove = -1; //<>//
     int bestHeuristic = Integer.MIN_VALUE;
     for (int i = 0; i < 4; i++) {
       long swiped = swipe(brd, i);
-      if (swiped != brd) { //<>//
+      if (swiped != brd) {
         int result = expectiminimax(swipe(brd, i), searchAhead * 2, 1);
-        if (result > bestHeuristic) { //<>//
+        if (result > bestHeuristic) {
           bestHeuristic = result;
           bestMove = i;
         }
@@ -46,17 +52,31 @@ class AI {
    * even depth = the game's move (random tile placed) 
    * Returns a value that represents how good the board passed in is*/
   public int expectiminimax(long brd, int depth, double probability) {
+    Integer fromTransposition = transposition.get(new Node(brd, depth));
+    if (fromTransposition != null) {
+      return fromTransposition;
+    }
     if (depth == 0 || probability < .001) {
-      return heuristic(brd);
+      Node n = new Node(brd, depth);
+      int heu = heuristic(brd);
+      transposition.put(n, heu);
+      return heu;
     } else if (depth % 2 != 0) { // our move
       // return value of maximum-valued child node
       int best = 0;
       for (int i = 0; i < 4; i++) {
         long swipeResult = swipe(brd, i);
         if (brd != swipeResult) {
-          best = Math.max(best, expectiminimax(swipe(brd, i), depth-1, probability));
+          Integer temp = transposition.get(new Node(swipeResult, depth-1));
+          if (temp == null) {
+            best = Math.max(best, expectiminimax(swipe(brd, i), depth-1, probability));
+          } else {
+            best = Math.max(best, temp);
+          }
         }
       }
+      Node n = new Node(brd, depth);
+      transposition.put(n, best);
       return best;
     } else { // the computer's random placement of a tile
       // return the weighted average of all child node values
@@ -66,17 +86,21 @@ class AI {
         for (int c = 0; c < 4; c++) {
           if (valueAt(brd, r, c) == 0) {
             emptyCount++;
-            avg += .1*probability * expectiminimax(replace(brd, r, c, 2), depth-1, probability*.1);
-            avg += .9*probability * expectiminimax(replace(brd, r, c, 1), depth-1, probability*.9);
+            long replacedBrd = replace(brd, r, c, 2);
+            Integer temp = transposition.get(new Node(replacedBrd, depth-1));
+            avg += .1*probability * (temp == null ? expectiminimax(replacedBrd, depth-1, probability*.1) : temp);
+            replacedBrd = replace(brd, r, c, 1);
+            temp = transposition.get(new Node(replacedBrd, depth-1));
+            avg += .9*probability * (temp == null ? expectiminimax(replacedBrd, depth-1, probability*.9) : temp);
           }
         }
       }
+      Node n = new Node(brd, depth);
+      transposition.put(n, (int)avg/emptyCount);
       return (int)avg / emptyCount;
     }
   } /** Returns how good this board is */
   private int heuristic(long brd) {
-    Integer fromTrans = transposition.get(brd);
-    if (fromTrans != null) { return fromTrans; }
     int ans = 0;
     ans += this.blankSpaces(brd) * 10;
     if (valueAt(brd, 0, 0) == 10) {
