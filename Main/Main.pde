@@ -2,7 +2,8 @@ import java.util.Map;
 PFont f;
 AI ai;
 Board[] boards;
-int succeed = 0;
+int succeed2048 = 0;
+int succeed4096 = 0;
 int fail = 0;
 boolean isAllGameOverStopped = false;
 void setup() {
@@ -22,8 +23,10 @@ void draw() {
       if (boards[i].gameOver()) {
         int largest = getLargest(boards[i]);
         System.out.println(largest);
-        if (largest >= 2048) {
-          succeed++;
+        if (largest == 2048) {
+          succeed2048++;
+        } else if (largest >= 4096) {
+          succeed4096++;
         } else {
           fail++;
         }
@@ -31,7 +34,8 @@ void draw() {
     }
   }
   if (allGameOver && !isAllGameOverStopped) {
-    System.out.println("Suceed: " + succeed);
+    System.out.println("Suceed 2048: " + succeed2048);
+    System.out.println("Succeed 4096: " + succeed4096);
     System.out.println("Fail: " + fail);
     isAllGameOverStopped = true;
   }
