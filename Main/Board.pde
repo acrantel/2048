@@ -111,6 +111,7 @@ class Board {
     }
     if (edited) {
       addTiles();
+      addMove();
     }
     score += points;
   }
@@ -148,6 +149,7 @@ class Board {
     }
     if (edited) {
       addTiles();
+      addMove();
     }
     score += points;
   }
@@ -186,6 +188,7 @@ class Board {
     }
     if (edited) {
       addTiles();
+      addMove();
     }
     score += points;
   }
@@ -224,6 +227,7 @@ class Board {
     }
     if (edited) {
       addTiles();
+      addMove();
     }
     score += points;
   }

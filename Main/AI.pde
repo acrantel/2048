@@ -17,10 +17,10 @@ class AI {
     } //<>//
     int best = move(b);
     switch (best) {
-      case 0: brd.swipeUp(); brd.addMove(); break;
-      case 1: brd.swipeLeft(); brd.addMove(); break;
-      case 2: brd.swipeDown(); brd.addMove(); break;
-      case 3: brd.swipeRight(); brd.addMove(); break;
+      case 0: brd.swipeUp(); break;
+      case 1: brd.swipeLeft(); break;
+      case 2: brd.swipeDown(); break;
+      case 3: brd.swipeRight(); break;
       case -1: break;
     }
   }
